@@ -3,3 +3,6 @@
 
 # Ignore Git directory
 .git/
+
+# Ignore all pycache directories recursively
+**/__pycache__/
