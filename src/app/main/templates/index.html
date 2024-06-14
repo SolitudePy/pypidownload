@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Python Package</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Download Python Package</h1>
+        <form action="/" method="post">
+            <label for="package_name">Enter Package Name:</label>
+            <input type="text" id="package_name" name="package_name" required>
+            <button type="submit" name="get-details">Get Details</button>
+        </form>
+        {% if package_details %}
+        <div class="package-details">
+            <h2>Package Details</h2>
+            <pre>{{ package_details | tojson }}</pre>
+            <form action="/" method="post" style="margin-top: 20px;">
+                <input type="hidden" name="package_name" value="{{ package_name }}">
+                <button type="submit" name="download" class="download-btn">Download</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
