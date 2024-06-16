@@ -14,7 +14,21 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and run the Docker containers
-        run: docker-compose up --build -d --wait
+        run: docker-compose up --build -d
+      
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for services to be ready..."
+          for i in {1..30}; do # Try for up to 30 seconds
+            docker-compose ps | grep "Up (healthy)"
+            if [ $? -eq 0 ]; then
+              echo "Services are ready!"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Services did not become ready within 30 seconds."
+          exit 1
 
       - name: Test the web service
         run: |
