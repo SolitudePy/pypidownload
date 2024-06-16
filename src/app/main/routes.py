@@ -17,6 +17,7 @@ def index():
     package_details = None
     package_name = None
     package_version = None
+    requires_dist = None
     markdown_content = None
     if request.method == 'POST':
         package_name = request.form['package_name']
@@ -38,6 +39,8 @@ def index():
                 package_info = response.json()                
                 package_details = package_info.get('info')                
                 session['package_version'] = package_details['version']
+                session['requires_dist'] = package_details['requires_dist']
+                requires_dist = session.get('requires_dist')
                 markdown_content = str(package_details['description'].replace('`', r'\`'))                
                 #print(markdown_content)
             except requests.RequestException as e:
