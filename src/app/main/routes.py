@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, render_template, request, send_file, after_this_request, flash, redirect, url_for
+from flask import Blueprint, current_app, render_template, request, send_file, after_this_request, flash, redirect, url_for, session
 import subprocess
 import os
 import shutil
@@ -15,7 +15,8 @@ main_bp = Blueprint(
 @main_bp.route('/', methods=['GET', 'POST'])
 def index():
     package_details = None
-    package_name = None
+    package_name = None    
+    markdown_content = None
     if request.method == 'POST':
         package_name = request.form['package_name']
         if not package_name:
@@ -26,8 +27,11 @@ def index():
             try:
                 response = requests.get(f'https://pypi.org/pypi/{package_name}/json')
                 response.raise_for_status()
-                package_info = response.json()
-                package_details = package_info.get('info')
+                package_info = response.json()                
+                package_details = package_info.get('info')                
+                session['package_version'] = package_details['version']
+                markdown_content = str(package_details['description'].replace('`', r'\`'))                
+                print(markdown_content)
             except requests.RequestException as e:
                 flash(f"Error fetching package details: {str(e)}", 'error')
                 return redirect('/')
@@ -37,7 +41,8 @@ def index():
                 command = ["pip", "download", package_name, "-d", current_app.config['DOWNLOAD_FOLDER']]
                 subprocess.run(command, check=True)
 
-                zip_filename = f"{package_name}_download.zip"
+                package_version = session.get('package_version')
+                zip_filename = f"{package_name}_{package_version}.zip"
                 zip_filepath = os.path.join(current_app.config['ZIP_FOLDER'], zip_filename)
                 with zipfile.ZipFile(zip_filepath, 'w') as zipf:
                     for root, _, files in os.walk(current_app.config['DOWNLOAD_FOLDER']):

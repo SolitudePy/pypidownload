@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <title>Download Python Package</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
@@ -16,7 +17,20 @@
         </form>
         {% if package_details %}
         <div class="package-details">
-            <h2>Package Details</h2>
+            <h2>Package Details:</h2>
+            <h4>Package Name: {{ package_name }}</h4>
+            <h4>Package Version: {{ package_details.version }}</h4>
+            <h4>Package Summary: {{ package_details.summary }}</h4>
+            <details>
+                <summary><b>Package description:</b></summary>
+                <div id="markdown-content"></div>
+            </details>
+            <h4>Package License:</h4>
+            <ul>
+                {% for Lic in package_details.classifiers.License %}
+                  <li>{{ Lic }}</li>
+                {% endfor %}
+              </ul>
             <pre>{{ package_details | tojson }}</pre>
             <form action="/" method="post" style="margin-top: 20px;">
                 <input type="hidden" name="package_name" value="{{ package_name }}">
@@ -25,5 +39,26 @@
         </div>
         {% endif %}
     </div>
+    {% set escaped_content = package_details.description | replace('`','\\`') %}
+    <script>
+        //document.addEventListener('DOMContentLoaded', function() {
+        // Example Markdown content
+        var markdownText = `
+            {{ escaped_content | safe }}
+        `;
+
+        console.log("Markdown content:", markdownText);
+        // Check if marked function is available
+        if (typeof marked === 'object') {
+            // Convert Markdown to HTML using Marked
+            var html = marked.parse(markdownText);
+
+            // Insert the HTML into the designated element
+            document.getElementById('markdown-content').innerHTML = html;
+        } else {
+            console.log('marked function not found!');
+        }
+    //});
+    </script>
 </body>
 </html>
