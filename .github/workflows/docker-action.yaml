@@ -1,0 +1,25 @@
+name: Build Docker Container and test HTTP
+
+on: [push]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and run the Docker containers
+        run: docker-compose up --build -d --wait
+
+      - name: Test the web service
+        run: |
+          echo "Testing the web service..."
+          curl --fail http://localhost:5000 || exit 1
+
+      - name: Stop and remove the Docker containers
+        run: docker-compose down
