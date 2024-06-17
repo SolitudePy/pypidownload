@@ -12,25 +12,29 @@
         <h1>Download Python Package</h1>
         <form action="/" method="post">
             <label for="package_name">Enter Package Name:</label>
-            <input type="text" id="package_name" name="package_name" required>
+            <input type="text" id="package_name" name="package_name" placeholder="Exmaple: flask[==3.0.3]" required>
             <button type="submit" name="get-details">Get Details</button>
         </form>
         {% if package_details %}
         <div class="package-details">
             <h2>Package Details:</h2>
-            <h4>Package Name: {{ package_name }}</h4>
-            <h4>Package Version: {{ package_details.version }}</h4>
-            <h4>Package Summary: {{ package_details.summary }}</h4>
+            <h4>Package Name: <em>{{ package_name }}</em></h4>
+            <h4>Package Version: <em>{{ package_details.version }}</em></h4>
+            <h4>Package Summary: <em>{{ package_details.summary }}</em></h4>
             <details>
                 <summary><b>Package description:</b></summary>
                 <div id="markdown-content"></div>
             </details>
-            <h4>Package License:</h4>
+            <h4>Package Requirements:</h4>
+            {% if package_details.requires_dist %}
             <ul>
-                {% for Lic in package_details.classifiers.License %}
-                  <li>{{ Lic }}</li>
+                {% for req in package_details.requires_dist %}
+                  <li><em>{{ req }}</em></li>
                 {% endfor %}
               </ul>
+            {% else %}
+            <em>None</em>
+            {% endif %} 
             <pre>{{ package_details | tojson }}</pre>
             <form action="/" method="post" style="margin-top: 20px;">
                 <input type="hidden" name="package_name" value="{{ package_name }}">

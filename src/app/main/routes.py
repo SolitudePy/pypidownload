@@ -15,23 +15,34 @@ main_bp = Blueprint(
 @main_bp.route('/', methods=['GET', 'POST'])
 def index():
     package_details = None
-    package_name = None    
+    package_name = None
+    package_version = None
+    requires_dist = None
     markdown_content = None
     if request.method == 'POST':
         package_name = request.form['package_name']
         if not package_name:
             flash('Package name is required!', 'error')
             return redirect('/')
+        
+        if "==" in package_name:
+            package_version = package_name.split("==")[1]
+            package_name = package_name.split("==")[0]            
 
         if 'get-details' in request.form:
             try:
-                response = requests.get(f'https://pypi.org/pypi/{package_name}/json')
+                if not package_version:
+                    response = requests.get(f'https://pypi.org/pypi/{package_name}/json')
+                else:
+                    response = requests.get(f'https://pypi.org/pypi/{package_name}/{package_version}/json')
                 response.raise_for_status()
                 package_info = response.json()                
                 package_details = package_info.get('info')                
                 session['package_version'] = package_details['version']
+                session['requires_dist'] = package_details['requires_dist']
+                requires_dist = session.get('requires_dist')
                 markdown_content = str(package_details['description'].replace('`', r'\`'))                
-                print(markdown_content)
+                #print(markdown_content)
             except requests.RequestException as e:
                 flash(f"Error fetching package details: {str(e)}", 'error')
                 return redirect('/')
