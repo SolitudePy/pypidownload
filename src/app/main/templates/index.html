@@ -1,21 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <title>Download Python Package</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
+
 <body>
     <div class="container">
         <h1>Download Python Package</h1>
         <form action="/" method="post">
             <label for="package_name">Enter Package Name:</label>
-            <input type="text" id="package_name" name="package_name" placeholder="Exmaple: flask[==3.0.3]" required>
+            <input type="text" id="package_name" name="package_name" placeholder="Example: flask[==3.0.3]" required />
             <button type="submit" name="get-details">Get Details</button>
         </form>
-        {% if package_details %}
+        {% with errors = get_flashed_messages(category_filter=["error"]) %} {% if
+        errors %}
+        <div class="error-message-get-details">
+            <ul>
+                {%- for msg in errors %}
+                <strong>{{ msg }}</strong>
+                {% endfor -%}
+            </ul>
+        </div>
+        {% endif %} {% endwith %} {% if package_details %}
         <div class="package-details">
             <h2>Package Details:</h2>
             <h4>Package Name: <em>{{ package_name }}</em></h4>
@@ -29,16 +40,18 @@
             {% if package_details.requires_dist %}
             <ul>
                 {% for req in package_details.requires_dist %}
-                  <li><em>{{ req }}</em></li>
+                <li><em>{{ req }}</em></li>
                 {% endfor %}
-              </ul>
+            </ul>
             {% else %}
             <em>None</em>
-            {% endif %} 
+            {% endif %}
             <pre>{{ package_details | tojson }}</pre>
-            <form action="/" method="post" style="margin-top: 20px;">
-                <input type="hidden" name="package_name" value="{{ package_name }}">
-                <button type="submit" name="download" class="download-btn">Download</button>
+            <form action="/" method="post" style="margin-top: 20px">
+                <input type="hidden" name="package_name" value="{{ package_name }}" />
+                <button type="submit" name="download" class="download-btn">
+                    Download
+                </button>
             </form>
         </div>
         {% endif %}
@@ -53,16 +66,17 @@
 
         console.log("Markdown content:", markdownText);
         // Check if marked function is available
-        if (typeof marked === 'object') {
+        if (typeof marked === "object") {
             // Convert Markdown to HTML using Marked
             var html = marked.parse(markdownText);
 
             // Insert the HTML into the designated element
-            document.getElementById('markdown-content').innerHTML = html;
+            document.getElementById("markdown-content").innerHTML = html;
         } else {
-            console.log('marked function not found!');
+            console.log("marked function not found!");
         }
-    //});
+        //});
     </script>
 </body>
+
 </html>

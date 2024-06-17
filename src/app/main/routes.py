@@ -44,7 +44,7 @@ def index():
                 markdown_content = str(package_details['description'].replace('`', r'\`'))                
                 #print(markdown_content)
             except requests.RequestException as e:
-                flash(f"Error fetching package details: {str(e)}", 'error')
+                flash(f"Error occurred or package does not exist.", 'error')
                 return redirect('/')
 
         elif 'download' in request.form:
@@ -76,7 +76,7 @@ def index():
 
                 return send_file(zip_filepath, as_attachment=True)
             except subprocess.CalledProcessError as e:
-                flash(f"Error downloading package: {str(e)}", 'error')
+                flash(f"Error downloading package.", 'error')
                 return redirect('/')
 
     return render_template('index.html', package_details=package_details, package_name=package_name)
