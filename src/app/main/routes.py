@@ -49,10 +49,11 @@ def index():
 
         elif 'download' in request.form:
             try:
-                command = ["pip", "download", package_name, "-d", current_app.config['DOWNLOAD_FOLDER']]
-                subprocess.run(command, check=True)
-
                 package_version = session.get('package_version')
+                
+                command = ["pip", "download", f"{package_name}=={package_version}", "-d", current_app.config['DOWNLOAD_FOLDER']]
+                subprocess.run(command, check=True)
+                
                 zip_filename = f"{package_name}_{package_version}.zip"
                 zip_filepath = os.path.join(current_app.config['ZIP_FOLDER'], zip_filename)
                 with zipfile.ZipFile(zip_filepath, 'w') as zipf:
